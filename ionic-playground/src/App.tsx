@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { 
   IonApp,
   IonButton,
+  IonCard,
+  IonCardContent,
   IonCol, 
   IonContent, 
   IonGrid, 
@@ -35,7 +37,31 @@ import '@ionic/react/css/display.css'
 /* Theme variables */
 import './theme/variables.css'
 
-const App: React.FC = () => (
+const App: React.FC = () => {
+  const [calculatedBmi, setCalculatedBmi] = useState<number>()
+
+  const heightInputRef = useRef<HTMLIonInputElement>(null)
+  const weightInputRef = useRef<HTMLIonInputElement>(null)
+
+  const calculateBMI = () => {
+    const enteredHeight = heightInputRef.current!.value
+    const enteredWeight = weightInputRef.current!.value
+
+    if (!enteredHeight || !enteredWeight) {
+      return
+    }
+
+    const bmi = +enteredWeight / (+enteredHeight * +enteredHeight)
+
+    setCalculatedBmi(bmi)
+  }
+
+  const resetInputs = () => {
+    heightInputRef.current!.value = ""
+    weightInputRef.current!.value = ""
+  }
+
+  return (
   <IonApp>
     <IonHeader>
       <IonToolbar>
@@ -48,7 +74,7 @@ const App: React.FC = () => (
           <IonCol>
             <IonItem>
               <IonLabel position="floating">Your Height</IonLabel>
-              <IonInput></IonInput>
+              <IonInput ref={heightInputRef}></IonInput>
             </IonItem>
           </IonCol>
         </IonRow>
@@ -56,32 +82,39 @@ const App: React.FC = () => (
           <IonCol>
             <IonItem>
               <IonLabel position="floating">Your Weight</IonLabel>
-              <IonInput></IonInput>
+              <IonInput ref={weightInputRef}></IonInput>
             </IonItem>
           </IonCol>
         </IonRow>
         <IonRow>
           <IonCol className="ion-text-left">
-            <IonButton>
+            <IonButton onClick={calculateBMI}>
               <IonIcon slot="start" icon={calculatorOutline} />
               Calculate
             </IonButton>
           </IonCol>
           <IonCol className="ion-text-right">
-            <IonButton>
+            <IonButton onClick={resetInputs}>
               <IonIcon slot="start" icon={refreshOutline} />
               Reset
             </IonButton>
           </IonCol>
         </IonRow>
-        <IonRow>
-          <IonCol>
-
-          </IonCol>
-        </IonRow>
+        {calculatedBmi && (
+          <IonRow>
+            <IonCol>
+              <IonCard>
+                <IonCardContent>
+                  <h2>{calculatedBmi}</h2>
+                </IonCardContent>
+              </IonCard>
+            </IonCol>
+          </IonRow>
+        )}
       </IonGrid>
     </IonContent>
   </IonApp>
-)
+  )
+}
 
 export default App
